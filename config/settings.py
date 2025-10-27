@@ -9,10 +9,10 @@ class Settings(BaseSettings):
     MILVUS_HOST: str = "localhost"
     MILVUS_PORT: int = 19530
     
-    # Model
-    EMBEDDING_MODEL: str = "BAAI/bge-m3"
-    EMBEDDING_DIM: int = 128
-    DEVICE: str = "cuda"
+    # Model (Hugging Face)
+    EMBEDDING_MODEL: str = "lamdx4/bge-m3-vietnamese-rental-projection"
+    EMBEDDING_DIM: int = 128  # Fixed for this model
+    DEVICE: str = "cpu"
     
     # Search
     DEFAULT_SEARCH_LIMIT: int = 100
