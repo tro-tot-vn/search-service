@@ -1,19 +1,19 @@
 import torch
 from typing import List
 from loguru import logger
-from transformers import AutoModel
 from config.settings import settings
+from transformers import AutoModel
 
 class EmbeddingService:
     def __init__(self):
         self.device = settings.DEVICE if torch.cuda.is_available() else "cpu"
         logger.info(f"Loading custom BGE-M3 model from Hugging Face on {self.device}...")
         
-        # Load model from Hugging Face
+        # Load model using AutoModel (handles custom architecture automatically)
         # Model: https://huggingface.co/lamdx4/bge-m3-vietnamese-rental-projection
         self.model = AutoModel.from_pretrained(
             settings.EMBEDDING_MODEL,
-            trust_remote_code=True
+            trust_remote_code=True  # Required for custom model architecture
         )
         
         self.model = self.model.to(self.device)

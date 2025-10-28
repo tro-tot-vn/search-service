@@ -17,6 +17,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy application code
 COPY . .
 
+# Pre-download custom projection model from HuggingFace (cache in Docker layer)
+RUN python -c "from transformers import AutoModel; \
+    AutoModel.from_pretrained('lamdx4/bge-m3-vietnamese-rental-projection', trust_remote_code=True)" || true
+
 # Expose port
 EXPOSE 8000
 
