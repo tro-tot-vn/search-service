@@ -41,6 +41,9 @@ class SearchService:
         """Build Milvus filter expression from parameters"""
         filters = []
         
+        # CRITICAL: Always filter by Approved status
+        filters.append('status == "Approved"')
+        
         if city:
             filters.append(f'city == "{city}"')
         
@@ -65,7 +68,7 @@ class SearchService:
         if interior_condition:
             filters.append(f'interior_condition == "{interior_condition}"')
         
-        return " && ".join(filters) if filters else ""
+        return " && ".join(filters)
     
     def hybrid_search(
         self,
