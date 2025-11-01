@@ -1,19 +1,44 @@
-__pycache__
+# Python artifacts
+__pycache__/
 *.pyc
 *.pyo
 *.pyd
 .Python
 *.so
 *.egg
-*.egg-info
-dist
-build
-.env
-.venv
-venv/
-ENV/
-.git
-.gitignore
-README.md
-.DS_Store
+*.egg-info/
+dist/
+build/
 
+# Virtual environments (CRITICAL - prevent 7GB+ bloat)
+.env
+.venv/
+venv/
+env/
+ENV/
+
+# Git
+.git/
+.gitignore
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.code-workspace
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Documentation
+*.md
+!requirements.txt

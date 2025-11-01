@@ -100,6 +100,11 @@ class SearchService:
         query_embedding = self.embedding_service.generate_dense_embedding(query)
         
         # 2. Build filter expression
+        logger.info(f"[BUILD FILTER] city={city}, district={district}, ward={ward}")
+        logger.info(f"[BUILD FILTER] price_min={price_min}, price_max={price_max}")
+        logger.info(f"[BUILD FILTER] acreage_min={acreage_min}, acreage_max={acreage_max}")
+        logger.info(f"[BUILD FILTER] interior_condition={interior_condition}")
+        
         filter_expr = self._build_filter_expression(
             city=city,
             district=district,
@@ -111,12 +116,15 @@ class SearchService:
             interior_condition=interior_condition
         )
         
-        if filter_expr:
-            logger.info(f"Filter expression: {filter_expr}")
+        logger.info(f"[FILTER EXPRESSION] {filter_expr}")
         
         # 3. Create search requests for hybrid search
         # Dense vector search (semantic)
         dense_search_params = {"metric_type": "COSINE", "params": {"ef": 128}}
+        
+        logger.info(f"DEBUG: query_embedding type: {type(query_embedding)}, len: {len(query_embedding)}")
+        logger.info(f"DEBUG: query text: {query}")
+        
         dense_req = AnnSearchRequest(
             data=[query_embedding],
             anns_field="dense_vector",
@@ -126,11 +134,14 @@ class SearchService:
         )
         
         # Sparse BM25 searches (keyword matching)
-        sparse_search_params = {"metric_type": "IP"}
+        # For BM25 with built-in Functions, pass query TEXT as data
+        sparse_search_params = {"metric_type": "BM25", "params": {}}
         
-        # Title BM25
+        logger.info(f"DEBUG: Creating BM25 search request with query: '{query}'")
+        
+        # Title BM25 - Pass text for BM25 function
         title_req = AnnSearchRequest(
-            data=[{query: 1.0}],  # BM25 uses text as sparse vector
+            data=[query],  # Pass text directly for BM25
             anns_field="sparse_title",
             param=sparse_search_params,
             limit=limit,
@@ -139,7 +150,7 @@ class SearchService:
         
         # Description BM25
         desc_req = AnnSearchRequest(
-            data=[{query: 1.0}],
+            data=[query],  # Pass text directly for BM25
             anns_field="sparse_description",
             param=sparse_search_params,
             limit=limit,
@@ -148,7 +159,7 @@ class SearchService:
         
         # Address BM25
         addr_req = AnnSearchRequest(
-            data=[{query: 1.0}],
+            data=[query],  # Pass text directly for BM25
             anns_field="sparse_address",
             param=sparse_search_params,
             limit=limit,
@@ -157,7 +168,7 @@ class SearchService:
         
         # 4. Perform hybrid search with weighted ranker
         # Weights: 40% dense, 30% title, 20% description, 10% address
-        reranker = WeightedRanker(0.4, 0.3, 0.2, 0.1)
+        reranker = WeightedRanker(float(0.4), float(0.3), float(0.2), float(0.1))
         
         results = self.collection.hybrid_search(
             reqs=[dense_req, title_req, desc_req, addr_req],

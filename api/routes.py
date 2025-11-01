@@ -13,7 +13,11 @@ async def hybrid_search(request: SearchRequest):
     Returns only post IDs for Node.js to enrich with full data
     """
     try:
-        logger.info(f"Search request: query='{request.query}', city={request.city}, limit={request.limit}")
+        logger.info(f"[SEARCH REQUEST] query='{request.query}'")
+        logger.info(f"[FILTERS] city={request.city}, district={request.district}, ward={request.ward}")
+        logger.info(f"[FILTERS] price_min={request.price_min}, price_max={request.price_max}")
+        logger.info(f"[FILTERS] acreage_min={request.acreage_min}, acreage_max={request.acreage_max}")
+        logger.info(f"[FILTERS] interior_condition={request.interior_condition}, limit={request.limit}")
         
         search_service = get_search_service()
         
